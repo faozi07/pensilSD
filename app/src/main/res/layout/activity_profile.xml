@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:id="@+id/llayout"
+    android:orientation="vertical"
+    tools:context="id.suksesit.pensil.ProfileActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bgutama">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/foto_siswa"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_photoprof"/>
+            <LinearLayout
+                android:id="@+id/reveal_items"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!--row 1 -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/gallery_img_btn"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/galeri" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:textColor="#fff"
+                            android:text="Gallery" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageButton
+                            android:id="@+id/photo_img_btn"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:background="@drawable/camera" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:textColor="#fff"
+                            android:text="Photo" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <Button
+                android:id="@+id/changeImage"
+                android:layout_below="@+id/foto_siswa"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/ripple_btnmulai"
+                android:text="Ganti Foto"
+                android:textColor="#fff"
+                android:textSize="9dp"
+                android:layout_marginBottom="15dp"/>
+
+            <TextView
+                android:id="@+id/tNama"
+                android:layout_below="@+id/changeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/colorPrimary"
+                android:text="Nama"
+                android:textSize="18dp" />
+
+            <RelativeLayout
+                android:id="@+id/rldata"
+                android:layout_below="@+id/tNama"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <TextView
+                    android:id="@+id/tUmur"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="65dp"
+                    android:gravity="center"
+                    android:text="__\n_____"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="14dp" />
+                <TextView
+                    android:id="@+id/tTglLhr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:gravity="center"
+                    android:layout_marginRight="65dp"
+                    android:layout_alignParentRight="true"
+                    android:text="__\n_____"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/tKelas"
+                android:layout_below="@+id/rldata"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="15dp"
+                android:gravity="center"
+                android:visibility="invisible"
+                android:layout_centerHorizontal="true"
+                android:text="_______"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp" />
+            <TextView
+                android:id="@+id/tSekolah"
+                android:layout_below="@+id/tKelas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:text="__\n_____"
+                android:visibility="invisible"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp" />
+            <TextView
+                android:id="@+id/tReset"
+                android:layout_below="@+id/tSekolah"
+                android:layout_marginTop="60dp"
+                android:layout_marginLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset User"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14dp" />
+
+            <Button
+                android:id="@+id/btnUbah"
+                android:layout_below="@+id/tReset"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ripple_btnmulai"
+                android:text="Ubah Profil"
+                android:textColor="#fff" />
+
+            <!--<TextView-->
+            <!--android:id="@+id/hasilPsikologi"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:text="Persepsi visual baik, Daya ingat cukup baik, Konsentrasi cukup baik, Hubungan sosial kurang baik, Kematangan emosi baik"-->
+            <!--android:textSize="18sp" />-->
+
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

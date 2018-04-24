@@ -1,0 +1,75 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
+    defaultConfig {
+        applicationId "id.suksesit.pensil"
+        minSdkVersion 17
+        targetSdkVersion 27
+        versionCode 6
+        versionName "1.1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'libs/httpclient-4.5.jar'
+        exclude 'libs/httpcore-4.4.1.jar'
+        exclude 'libs/httpmime-4.5.jar'
+    }
+}
+
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation files('libs/httpclient-4.5.jar')
+    implementation files('libs/httpcore-4.4.1.jar')
+    implementation files('libs/httpmime-4.5.jar')
+    compile('com.github.ozodrukh:CircularReveal:1.1.1@aar') {
+        transitive = true;
+    }
+    implementation files('libs/PhotoUtil.jar')
+    implementation files('libs/GenAsync.1.2.jar')
+    implementation 'com.github.traex.rippleeffect:library:1.3'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:animated-vector-drawable:27.1.1'
+    implementation 'com.android.support:customtabs:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.github.bumptech.glide:volley-integration:1.4.0'
+    implementation 'com.mcxiaoke.volley:library:1.0.19'
+    implementation 'com.amitshekhar.android:android-networking:1.0.0'
+    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.nightonke:boommenu:2.1.1'
+    //firebase
+    implementation 'com.google.firebase:firebase-messaging:15.0.0'
+    implementation 'com.google.firebase:firebase-database:15.0.0'
+    implementation 'com.google.firebase:firebase-core:15.0.0'
+    implementation 'com.google.firebase:firebase-firestore:15.0.0'
+    implementation 'com.google.android.gms:play-services-ads:15.0.0'
+    implementation 'com.google.firebase:firebase-ads:15.0.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
+    implementation files('libs/android-sqlite-asset-helper.jar') //sqlite
+
+    testImplementation 'junit:junit:4.12'
+}
+apply plugin: 'com.google.gms.google-services'

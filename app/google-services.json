@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "182573237843",
+    "firebase_url": "https://pensil-e01a6.firebaseio.com",
+    "project_id": "pensil-e01a6",
+    "storage_bucket": "pensil-e01a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:182573237843:android:f322b83e6d23246c",
+        "android_client_info": {
+          "package_name": "id.suksesit.pensil"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "182573237843-n3h6ttvh22jntvbpv05p74n7ngsnffsm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.suksesit.pensil",
+            "certificate_hash": "72a72b59aee1d072d79238f05a828ce8d56f5d33"
+          }
+        },
+        {
+          "client_id": "182573237843-5nqhdba4vt5tvipib8kgqki9va7jn1if.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4_WOK739roU_phOQ8A1PpMqzUW2opqks"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "182573237843-5nqhdba4vt5tvipib8kgqki9va7jn1if.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

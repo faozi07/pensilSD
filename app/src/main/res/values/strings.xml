@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">PensilSD</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_logins">loginsActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">Lanjut</string>
+    <string name="skip">Lewati</string>
+    <string name="start">OK,Mulai</string>
+
+    <string name="slide_1_title">Untukmu Ibu</string>
+    <string name="slide_1_desc">Jangan pernah mengecewakan seorang Ibu, bahagiakanlah Ibu selagi kita masih punya waktu</string>
+
+    <string name="slide_2_title">Masa Depan Anak</string>
+    <string name="slide_2_desc">Masa depan anak tidak tergantung nilai sekolahnya yang tinggi, masa depan anak berada di tangan seorang anak itu sendiri</string>
+
+    <string name="slide_3_title">Pesan Komnas Anak</string>
+    <string name="slide_3_desc">Benahi sistem pendidikan bagi anak-anak di dalam rumah. Salah satunya mengenai keberanian untuk mengatakan tidak pada ajakan orang yang tak dikenal</string>
+
+    <string name="slide_4_title">Pola Asuh Orang Tua</string>
+    <string name="slide_4_desc">Otoriter, Demokratis, dan Serba membolehkan adalah 3 Gaya Pola Asuh Orang Tua yang berpengaruh terhadap psikologi anaknya (Diana Baumrind)</string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
+    <string name="play_again">Play Again</string>
+</resources>

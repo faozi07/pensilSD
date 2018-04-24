@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bgutama"
+    tools:context="id.suksesit.pensil.HomeActivity">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/foto_siswa"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:padding="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_photoprof"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:id="@+id/tSlmtDtng"
+        android:layout_below="@id/foto_siswa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="5dp"
+        android:text="Selamat Datang"/>
+    <TextView
+        android:id="@+id/tNama"
+        android:layout_below="@+id/tSlmtDtng"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Pengguna Baru"/>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_below="@+id/tNama"
+        android:layout_width="match_parent"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_height="200sp"
+        android:background="@drawable/anakanak" />
+    <TextView
+        android:id="@+id/tpensil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:text="Pendeteksi Psikologis Anak SD\nCopyright © 2017 - Pensil SD" />
+</RelativeLayout>

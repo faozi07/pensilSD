@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context="id.suksesit.pensil.TentangKamiActivity">
+    <ImageView
+        android:id="@+id/gmbar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:src="@drawable/anakanak"/>
+    <ScrollView
+        android:layout_below="@+id/gmbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="11dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <WebView
+                android:id="@+id/ttgkmi"
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""/>
+        </RelativeLayout>
+    </ScrollView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="Copyright © 2017 - Pensil SD"/>
+</RelativeLayout>
