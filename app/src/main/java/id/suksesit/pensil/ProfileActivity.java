@@ -1,5 +1,6 @@
 package id.suksesit.pensil;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,62 +49,60 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import id.suksesit.pensil.helper.Http;
 import id.suksesit.pensil.R;
 
+import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
+
 public class ProfileActivity extends AppCompatActivity {
 
     MainActivity H = new MainActivity();
 
-    String URL = Http.url + "penso/profile.php?user_id=" + H.user_id;
-    String jsonResult;
     LinearLayout view, llayout;
     private PopupWindow mPopupImage;
-    public RelativeLayout mRelativeLayout, mReveralView;
 
-    private boolean hidden = true;
-    int PICK_IMAGE_REQUEST = 1;
     Bitmap bitmap;
     Dialog myDialog;
     private Context mContexts;
     final int GALLERY_REQUEST = 22131;
 
-    Toolbar toolbar;
     GalleryPhoto galleryPhoto;
     public static TextView sekolah, nama, tglLhr, kelas, umur;
     Button btnUbah, btnChangeImage;
     ImageView image_update;
     CircleImageView fotoSiswa;
-    int mYear, mMonth, mDay;
+    public static String photoPath = "";
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        sekolah = (TextView) findViewById(R.id.tSekolah);
-        nama = (TextView) findViewById(R.id.tNama);
-        fotoSiswa = (CircleImageView) findViewById(R.id.foto_siswa);
-        tglLhr = (TextView) findViewById(R.id.tTglLhr);
-        kelas = (TextView) findViewById(R.id.tKelas);
-        btnUbah = (Button) findViewById(R.id.btnUbah);
-        llayout = (LinearLayout) findViewById(R.id.llayout);
-        ImageButton closeButton = (ImageButton) findViewById(R.id.ib_close);
-        btnChangeImage = (Button) findViewById(R.id.changeImage);
-        umur = (TextView) findViewById(R.id.tUmur);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Profil");
+        }
+        sekolah = findViewById(R.id.tSekolah);
+        nama = findViewById(R.id.tNama);
+        fotoSiswa = findViewById(R.id.foto_siswa);
+        tglLhr = findViewById(R.id.tTglLhr);
+        kelas = findViewById(R.id.tKelas);
+        btnUbah = findViewById(R.id.btnUbah);
+        llayout = findViewById(R.id.llayout);
+        btnChangeImage = findViewById(R.id.changeImage);
+        umur = findViewById(R.id.tUmur);
         mContexts = getApplicationContext();
-        umur.setText("Umur\n\n" + H.umur);
-        nama.setText(H.nama); //ini ngambilnya dr session td, ga ngeload dr server
-        tglLhr.setText("Tanggal Lahir\n\n" + H.tglLhr);
-        kelas.setText("Kelas\n\n" + H.kelas);
-        sekolah.setText("Sekolah\n\n" + H.sekolah);
+        umur.setText("Umur\n\n" + MainActivity.umur);
+        nama.setText(MainActivity.nama); //ini ngambilnya dr session td, ga ngeload dr server
+        tglLhr.setText("Tanggal Lahir\n\n" + MainActivity.tglLhr);
+        kelas.setText("Kelas\n\n" + MainActivity.kelas);
+        sekolah.setText("Sekolah\n\n" + MainActivity.sekolah);
         galleryPhoto = new GalleryPhoto(getApplicationContext());
 
-        Log.d("log url", URL);
-
-        setTitle("Profil " + H.nama);
+        setTitle("Profil " + MainActivity.nama);
         Picasso.with(this) // ini mas
-                .load(Http.picture + H.picture)//
+                .load(Http.picture + MainActivity.picture)//
                 .placeholder(R.drawable.ic_photoprof)
                 .error(R.drawable.ic_photoprof)
                 .into(fotoSiswa);
-        Log.d("Log picture", Http.picture + H.picture);
+        Log.d("Log picture", Http.picture + MainActivity.picture);
 
         fotoSiswa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,21 +124,18 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, UbahProfilActivity.class));
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Profil");
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         finish();
-//        onBackPressed();
+        onBackPressed();
         return true;
     }
 
     @Override
     public void onBackPressed() {
         finish();
-        return;
     }
 
     @Override
@@ -147,20 +143,19 @@ public class ProfileActivity extends AppCompatActivity {
         try {
             myDialog = new Dialog(ProfileActivity.this);
             myDialog.setContentView(R.layout.update_foto);
-            myDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT);
-            myDialog.setCancelable(true);
+            if (myDialog.getWindow() != null) {
+                myDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.WRAP_CONTENT);
+                myDialog.setCancelable(true);
+            }
 
-            Button save = (Button) myDialog.findViewById(R.id.button_update_profilepicture);
-            image_update = (ImageView) myDialog.findViewById(R.id.img_profile_update);
+            Button save = myDialog.findViewById(R.id.button_update_profilepicture);
+            image_update = myDialog.findViewById(R.id.img_profile_update);
             myDialog.show();
 
             Uri uri = data.getData();
-            if (uri == null) {
-
-            }
             galleryPhoto.setPhotoUri(uri);
-            String photoPath = galleryPhoto.getPath();
+            photoPath = galleryPhoto.getPath();
             bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
             fotoSiswa.setImageBitmap(bitmap);
 
@@ -168,49 +163,10 @@ public class ProfileActivity extends AppCompatActivity {
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final ProgressDialog loading = ProgressDialog.show(ProfileActivity.this, "Ubah Foto...", "Tunggu yah :) ...", false, false);
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, Http.url + "penso/update_picture.php",
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String result) {
-                                    loading.dismiss();
-                                    Log.d("Log result", result);
-
-                                    if (!result.toLowerCase().equals("failed")) {
-                                        saveFoto(result);
-                                        Toast.makeText(ProfileActivity.this, "Berhasil Ubah Gambar", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(ProfileActivity.this, "Gagal Ubah Gambar", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            },
-
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
-                                    loading.dismiss();
-                                }
-                            }) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            String image = getStringImage(bitmap);
-                            Intent a = getIntent();
-                            Map<String, String> params = new HashMap<String, String>();
-
-                            params.put("user_id", H.user_id);
-                            params.put("picture", image);
-                            return params;
-                        }
-                    };
-
-                    stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-                    stringRequest.setShouldCache(false);
-                    RequestQueue requestQueue = Volley.newRequestQueue(ProfileActivity.this);
-                    requestQueue.add(stringRequest);
-                    myDialog.cancel();
+                    saveFoto(photoPath);
+                    myDialog.dismiss();
                     fotoSiswa.setImageBitmap(bitmap);
-                    H.fotoSiswa.setImageBitmap(bitmap);
+                    MainActivity.fotoSiswa.setImageBitmap(bitmap);
                 }
             });
         } catch (FileNotFoundException e) {
@@ -231,6 +187,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void popupImage() {
         LayoutInflater inflater = (LayoutInflater) mContexts.getSystemService(LAYOUT_INFLATER_SERVICE);
 
+        @SuppressLint("InflateParams")
         View customView = inflater.inflate(R.layout.popup_foto, null);
         mPopupImage = new PopupWindow(
                 customView,
@@ -241,11 +198,11 @@ public class ProfileActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 21) {
             mPopupImage.setElevation(5.0f);
         }
-        RelativeLayout relativeLayout = (RelativeLayout) customView.findViewById(R.id.rl_custom_layout);
-        ImageButton closeButton = (ImageButton) customView.findViewById(R.id.ib_close);
-        ImageView fotoFull = (ImageView) customView.findViewById(R.id.foto_siswa);
+        RelativeLayout relativeLayout = customView.findViewById(R.id.rl_custom_layout);
+        ImageButton closeButton = customView.findViewById(R.id.ib_close);
+        ImageView fotoFull = customView.findViewById(R.id.foto_siswa);
         Picasso.with(ProfileActivity.this)
-                .load(Http.picture + H.picture)//
+                .load(Http.picture + MainActivity.picture)//
                 .placeholder(R.drawable.ic_photoprof)
                 .error(R.drawable.ic_photoprof)
                 .into(fotoFull);
@@ -254,15 +211,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mPopupImage.dismiss();
-//                        finish();
-            }
-        });
-
-        relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                        mPopupImage.dismiss();
-//                        finish();
             }
         });
         mPopupImage.showAtLocation(llayout, Gravity.CENTER, 0, 0);
@@ -273,7 +221,7 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString("picture", foto);
-        H.picture = foto;
+        MainActivity.picture = foto;
         editor.apply();
     }
 }

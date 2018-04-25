@@ -6,14 +6,10 @@ package id.suksesit.pensil;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class SoalDB extends SQLiteOpenHelper {
 
@@ -67,6 +63,26 @@ public class SoalDB extends SQLiteOpenHelper {
             SQLiteDatabase db = getWritableDatabase();
             String sql = "INSERT INTO " + TABLE_NAMA_SOAL + " (" + ID + ", " + KATEGORI + ", " + PERTANYAAN + ", "+STATUS+") VALUES ("
                     + idSoal + ", '" + kategori + "', '" + pertanyaan + "', '"+status+"');";
+            db.execSQL(sql);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+    }
+
+    public void updateSoal(int id) {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            String sql = "UPDATE " + TABLE_NAMA_SOAL + " SET " + STATUS + " = '0' WHERE " + ID + "="+id+";";
+            db.execSQL(sql);
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }
+    }
+
+    public void updateSoalAll() {
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            String sql = "UPDATE " + TABLE_NAMA_SOAL + " SET " + STATUS + " = '1';";
             db.execSQL(sql);
         } catch (Exception exp) {
             exp.printStackTrace();

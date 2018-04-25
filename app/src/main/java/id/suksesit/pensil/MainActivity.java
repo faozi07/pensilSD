@@ -1,13 +1,14 @@
 package id.suksesit.pensil;
 
+import android.annotation.SuppressLint;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,16 +19,11 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.nightonke.boommenu.BoomButtons.BoomButton;
 import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.OnBoomListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.suksesit.pensil.helper.ResetStatus;
-import id.suksesit.pensil.R;
 import id.suksesit.pensil.helper.BuilderManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,23 +43,25 @@ public class MainActivity extends AppCompatActivity {
     public static String saran = "";
     public static String namaBoom = "Beranda";
     public static CircleImageView fotoSiswa;
+    @SuppressLint("StaticFieldLeak")
     public static FrameLayout fl;
     RelativeLayout llayout;
-    private BoomMenuButton bmbMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Beranda");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Beranda");
+        }
 
         cekLogin();
 
-        fl = (FrameLayout) findViewById(R.id.frame_container);
-        llayout = (RelativeLayout) findViewById(R.id.llayout);
-        bmbMenu = (BoomMenuButton) findViewById(R.id.bmbMenu);
+        fl = findViewById(R.id.frame_container);
+        llayout = findViewById(R.id.llayout);
+        BoomMenuButton bmbMenu = findViewById(R.id.bmbMenu);
         bmbMenu.setBackPressListened(true);
         bmbMenu.setUse3DTransformAnimation(false);
         bmbMenu.setDuration(400);
@@ -139,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (index == 4) {
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Tes psikologi anak anda di sini : http://play.google.com/store/apps/details?id=id.suksesit.pensil");
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "Tes psikologi anak anda di sini : http://play.google.com/store/apps/details?id="+BuildConfig.APPLICATION_ID);
                     sendIntent.setType("text/plain");
                     startActivity(sendIntent);
                 } else if (index == 5) {
@@ -184,6 +182,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         resetStatus();
+    }
+
+    private void resetStatus() {
+        SoalDB soalDB = new SoalDB(this);
+        soalDB.getWritableDatabase();
+        soalDB.updateSoalAll();
     }
 
     @Override
@@ -263,11 +267,6 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-    }
-
-    public void resetStatus() {
-        new ResetStatus(this).execute(
-        );
     }
 
     private void cekLogin() {

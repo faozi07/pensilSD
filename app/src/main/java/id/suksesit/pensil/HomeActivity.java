@@ -27,7 +27,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.suksesit.pensil.helper.Http;
 
 public class HomeActivity extends Fragment {
 
@@ -61,7 +60,7 @@ public class HomeActivity extends Fragment {
             nama.setText("Pengguna Baru");
             MainActivity.picture = "aaaaa_photoprof.png";
             Picasso.with(getActivity())
-                    .load(Http.picture + MainActivity.picture)
+                    .load(R.drawable.ic_photoprof)
                     .placeholder(R.drawable.ic_photoprof)
                     .error(R.drawable.ic_photoprof)
                     .into(fotoSiswa);
@@ -69,8 +68,9 @@ public class HomeActivity extends Fragment {
         else {
             slmtdtng.setText("Selamat Datang");
             nama.setText(MainActivity.nama);
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("userInfo", Context.MODE_PRIVATE);
             Picasso.with(getActivity())
-                    .load(Http.picture + MainActivity.picture)
+                    .load(sharedPreferences.getString("picture",""))
                     .placeholder(R.drawable.ic_photoprof)
                     .error(R.drawable.ic_photoprof)
                     .into(fotoSiswa);
@@ -90,6 +90,7 @@ public class HomeActivity extends Fragment {
     }
 
     private void getData() {
+        soalDB = new SoalDB(getActivity());
         final ProgressDialog pLoading = new ProgressDialog(getActivity());
         pLoading.setTitle("Memuat data ...");
         pLoading.setMessage("Silahkan tunggu sejenak");
@@ -111,11 +112,12 @@ public class HomeActivity extends Fragment {
                                 if (arraySoal != null && arraySoal.size()>0) {
                                     arraySoal.clear();
                                 }
-
+                                soalDB.dropTable();
+                                SQLiteDatabase sqlDb = soalDB.getWritableDatabase();
+                                soalDB.onCreate(sqlDb);
                                 if (querySnapshot != null) {
                                     for (DocumentChange change : querySnapshot.getDocumentChanges()) {
                                         if (change.getType() == DocumentChange.Type.ADDED) {
-                                            soalDB = new SoalDB(getActivity());
                                             soalDB.insertSoal(
                                                     Integer.parseInt(String.valueOf(change.getDocument().getData().get("id"))),
                                                     String.valueOf(change.getDocument().get("kategori")),

@@ -1,5 +1,6 @@
 package id.suksesit.pensil;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,39 +10,36 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import id.suksesit.pensil.helper.Http;
 
 public class HasilActivity extends AppCompatActivity {
 
-    MainActivity H = new MainActivity();
-
-    String URL = Http.url + "penso/profile.php?user_id=" + H.user_id;
     LinearLayout view;
     TextView nama, kesimpulan, hasil,saran;
     CircleImageView fotoSiswa;
     ImageView emot;
-    private InterstitialAd mInterstitialAd;
 
+    @SuppressLint("SetTextI18n")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hasil);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Hasil Psikologi");
+        }
 
-        nama = (TextView) findViewById(R.id.tNama);
-        hasil = (TextView) findViewById(R.id.hasilPsikologi);
-        kesimpulan = (TextView) findViewById(R.id.kesimpulan);
-        saran = (TextView) findViewById(R.id.saran);
-        fotoSiswa = (CircleImageView) findViewById(R.id.foto_siswa);
-        emot = (ImageView) findViewById(R.id.emot);
-        nama.setText(H.nama);
-        hasil.setText(H.nilai_ss);
-        kesimpulan.setText(H.predikat_ss);
-        saran.setText(H.saran);
+        nama = findViewById(R.id.tNama);
+        hasil = findViewById(R.id.hasilPsikologi);
+        kesimpulan = findViewById(R.id.kesimpulan);
+        saran = findViewById(R.id.saran);
+        fotoSiswa = findViewById(R.id.foto_siswa);
+        emot = findViewById(R.id.emot);
+        nama.setText(MainActivity.nama);
+        hasil.setText(MainActivity.nilai_ss);
+        kesimpulan.setText(MainActivity.predikat_ss);
+        saran.setText(MainActivity.saran);
         if (Integer.parseInt(hasil.getText().toString()) < 30) {
             Picasso.with(this)
                     .load(R.drawable.ic_shock)
@@ -79,16 +77,12 @@ public class HasilActivity extends AppCompatActivity {
             hasil.setTextColor(Color.rgb(68,108,179));
             saran.setTextColor(Color.rgb(68,108,179));
         }
-        Log.d("log url", URL);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Hasil Psikologi");
         Picasso.with(this)
-                .load(Http.picture + H.picture)
+                .load(MainActivity.picture)
                 .placeholder(R.drawable.ic_photoprof)
                 .error(R.drawable.ic_photoprof)
                 .into(fotoSiswa);
-        Log.d("Log picture", Http.picture + H.picture);
     }
     @Override
     public boolean onSupportNavigateUp() {
@@ -97,44 +91,8 @@ public class HasilActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-5730449577374867/5331596856");
-        mInterstitialAd.setAdListener(new AdListener() {
-
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                if(mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                }
-            }
-
-            @Override
-            public void onAdOpened() {
-                super.onAdOpened();
-            }
-
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                super.onAdLeftApplication();
-            }
-
-            @Override
-            public void onAdFailedToLoad(int i) {
-                super.onAdFailedToLoad(i);
-            }
-        });
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitialAd.loadAd(adRequest);
         finish();
         MainActivity.namaBoom = "Beranda";
         startActivity(new Intent(HasilActivity.this,MainActivity.class));
-        return;
     }
 }

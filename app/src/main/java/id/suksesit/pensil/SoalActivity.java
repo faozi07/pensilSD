@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -18,23 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
-import id.suksesit.pensil.helper.Http;
 import id.suksesit.pensil.helper.ResetStatus;
-import id.suksesit.pensil.helper.UbahNilaiSS;
-import id.suksesit.pensil.R;
 
 public class SoalActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -51,7 +36,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
                     "dijadikan teladan bagi orang lain";
     private RelativeLayout llayout;
     private int jmlprtnyaan = 1;
-    public static int nilai = 0,niltambah = 0;
+    public static int nilai = 0,niltambah = 0, idSoal = 0;
     public static String id_angket1 = "";
     SoalDB soalDB;
     public static ArrayList<modelSoal> arraySoal = new ArrayList<>();
@@ -83,7 +68,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
                 if (n.equals("")) {
                     Toast.makeText(SoalActivity.this, "Pilih Jawaban Kamu ya :)", Toast.LENGTH_SHORT).show();
                 } else  {
-//                ubahStatus();
+                ubahStatus(idSoal);
                     nilai = nilai + niltambah;
                     jmlprtnyaan = jmlprtnyaan + 1;
                     nosoal.setText(String.valueOf(jmlprtnyaan));
@@ -166,6 +151,15 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
         }
     }
 
+    private void ubahStatus(int id) {
+        soalDB.getWritableDatabase();
+        if (jmlprtnyaan <= 16) {
+            soalDB.updateSoal(id);
+        } else {
+            soalDB.updateSoalAll();
+        }
+    }
+
     private void ubahNilai() {
 
         String nil2="",kes="",sar="";
@@ -185,9 +179,6 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
             sar=ketTing;
             saveNilai(nil.getText().toString(),tinggi,ketTing);
         }
-        new UbahNilaiSS(this).execute(
-                nil2,kes,sar
-        );
 
     }
 
@@ -212,6 +203,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
             modelSoal ms = arraySoal.get(i);
             pertanyaan.setText(ms.getPertanyaan());
             jnsSoal.setText(ms.getKategori());
+            idSoal = ms.getId();
         }
     }
 
