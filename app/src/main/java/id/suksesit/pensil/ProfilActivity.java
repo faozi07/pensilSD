@@ -469,13 +469,17 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
             }
             galleryPhoto.setPhotoUri(uri);
             final String photoPath = galleryPhoto.getPath();
-            bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+            File avatarFileA = new File(photoPath);
+            Uri avatarUri = Uri.fromFile(avatarFileA);
+            getCameraPhotoOrientation(this,avatarUri,photoPath);
+            decodeFile(photoPath);
+            bitmap = ImageLoader.init().from(strMyImagePath).requestSize(512, 512).getBitmap();
 
             image_update.setImageBitmap(bitmap);
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    saveFoto(photoPath);
+                    saveFoto(strMyImagePath);
                     myDialog.dismiss();
                     fotoSiswa.setImageBitmap(bitmap);
                 }
