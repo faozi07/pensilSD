@@ -130,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(boomButton, "Ubah data kamu lebih dulu di menu profil", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     } else {
-                        finish();
                         startActivity(new Intent(MainActivity.this, HasilActivity.class));
                     }
                 } else if (index == 4) {
@@ -140,9 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     sendIntent.setType("text/plain");
                     startActivity(sendIntent);
                 } else if (index == 5) {
-                    finish();
                     startActivity(new Intent(MainActivity.this, TentangKamiActivity.class));
-                    getSupportActionBar().setTitle("Tentang Kami");
                 } else if (index == 6) {
                     showDialog();
                 }

@@ -1,7 +1,9 @@
 package id.suksesit.pensil;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,13 +12,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HasilActivity extends AppCompatActivity {
 
-    LinearLayout view;
     TextView nama, kesimpulan, hasil,saran;
     CircleImageView fotoSiswa;
     ImageView emot;
@@ -78,10 +83,20 @@ public class HasilActivity extends AppCompatActivity {
             saran.setTextColor(Color.rgb(68,108,179));
         }
 
-        Picasso.with(this)
-                .load(MainActivity.picture)
-                .placeholder(R.drawable.ic_photoprof)
-                .error(R.drawable.ic_photoprof)
+        SharedPreferences spUser = getSharedPreferences("userInfo", Context.MODE_PRIVATE);
+        Glide.with(this).load(spUser.getString("picture",""))
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        Log.d("message ","Gagal ubah foto"+e);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(fotoSiswa);
     }
     @Override
@@ -93,6 +108,5 @@ public class HasilActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
         MainActivity.namaBoom = "Beranda";
-        startActivity(new Intent(HasilActivity.this,MainActivity.class));
     }
 }
