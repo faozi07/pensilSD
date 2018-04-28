@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                     callFragment(fragment);
                     getSupportActionBar().setTitle("Beranda");
                 } else if (index == 1) {
-                    finish();
                     startActivity(new Intent(MainActivity.this, ProfilActivity.class));
                 } else if (index == 2) {
                     if (nilai_ss.equals("0") || HomeActivity.noSoal != 15) {

@@ -3,6 +3,7 @@ package id.suksesit.pensil;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,9 +11,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -42,6 +46,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -51,34 +59,33 @@ import com.kosalgeek.android.photoutil.ImageLoader;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import id.suksesit.pensil.helper.Http;
 import id.suksesit.pensil.helper.Permission;
+import id.suksesit.pensil.helper.ScalingUtilities;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
 
 public class ProfilActivity extends AppCompatActivity implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    MainActivity H = new MainActivity();
-
-    String URL = Http.url + "penso/profile.php?user_id=" + H.user_id;
-    LinearLayout view, llayout;
+    LinearLayout llayout;
     private PopupWindow mPopupImage;
     Bitmap bitmap;
     Dialog myDialog;
     private Context mContexts;
-    private static final int REQUEST_WRITE_PERMISSION = 786;
     final int GALLERY_REQUEST = 22131;
     Uri uri;
-    Toolbar toolbar;
     LinearLayout mRevealView;
     private boolean hidden = true;
-    private ImageButton gallery_btn, photo_btn;
     GalleryPhoto galleryPhoto;
     CameraPhoto cameraPhoto;
     final int CAMERA_REQUEST = 13323;
@@ -86,54 +93,64 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
     Button btnUbah, btnChangeImage;
     ImageView image_update;
     CircleImageView fotoSiswa;
-    private InterstitialAd mInterstitialAd;
+    public int rotate = 0;
+    String strMyImagePath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        sekolah = (TextView) findViewById(R.id.tSekolah);
-        nama = (TextView) findViewById(R.id.tNama);
-        fotoSiswa = (CircleImageView) findViewById(R.id.foto_siswa);
-        tglLhr = (TextView) findViewById(R.id.tTglLhr);
-        kelas = (TextView) findViewById(R.id.tKelas);
-        resetUser = (TextView) findViewById(R.id.tReset);
-        btnUbah = (Button) findViewById(R.id.btnUbah);
-        llayout = (LinearLayout) findViewById(R.id.llayout);
-        btnChangeImage = (Button) findViewById(R.id.changeImage);
-        umur = (TextView) findViewById(R.id.tUmur);
+        sekolah = findViewById(R.id.tSekolah);
+        nama = findViewById(R.id.tNama);
+        fotoSiswa = findViewById(R.id.foto_siswa);
+        tglLhr = findViewById(R.id.tTglLhr);
+        kelas = findViewById(R.id.tKelas);
+        resetUser = findViewById(R.id.tReset);
+        btnUbah = findViewById(R.id.btnUbah);
+        llayout = findViewById(R.id.llayout);
+        btnChangeImage = findViewById(R.id.changeImage);
+        umur = findViewById(R.id.tUmur);
         mContexts = getApplicationContext();
-        umur.setText("Umur\n\n" + H.umur);
-        nama.setText(H.nama); //ini ngambilnya dr session td, ga ngeload dr server
-        tglLhr.setText("Tgl Lahir\n\n" + H.tglLhr);
-        kelas.setText("Kelas : " + H.kelas);
-        sekolah.setText("Sekolah\n" + H.sekolah);
+        umur.setText("Umur\n\n" + MainActivity.umur);
+        nama.setText(MainActivity.nama); //ini ngambilnya dr session td, ga ngeload dr server
+        tglLhr.setText("Tgl Lahir\n\n" + MainActivity.tglLhr);
+        kelas.setText("Kelas : " + MainActivity.kelas);
+        sekolah.setText("Sekolah\n" + MainActivity.sekolah);
         galleryPhoto = new GalleryPhoto(getApplicationContext());
         cameraPhoto = new CameraPhoto(getApplicationContext());
         //pilih foto
-        mRevealView = (LinearLayout) findViewById(R.id.reveal_items);
+        mRevealView = findViewById(R.id.reveal_items);
         mRevealView.setVisibility(View.GONE);
 
-        gallery_btn = (ImageButton) findViewById(R.id.gallery_img_btn);
-        photo_btn = (ImageButton) findViewById(R.id.photo_img_btn);
+        ImageButton gallery_btn = findViewById(R.id.gallery_img_btn);
+        ImageButton photo_btn = findViewById(R.id.photo_img_btn);
 
         gallery_btn.setOnClickListener(this);
         photo_btn.setOnClickListener(this);
 
-        Log.d("log url", URL);
-        if (MainActivity.kelas == "" && MainActivity.sekolah == "") {
+        if (MainActivity.kelas.equals("") && MainActivity.sekolah.equals("")) {
             sekolah.setVisibility(View.GONE);
             kelas.setVisibility(View.GONE);
         } else {
             sekolah.setVisibility(View.VISIBLE);
             kelas.setVisibility(View.VISIBLE);
         }
-        Picasso.with(this) // ini mas
-                .load(Http.picture + H.picture)//
-                .placeholder(R.drawable.ic_photoprof)
-                .error(R.drawable.ic_photoprof)
+        SharedPreferences spUser = getSharedPreferences("userInfo",Context.MODE_PRIVATE);
+        Glide.with(this).load(spUser.getString("picture",""))
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        Log.d("message ","Gagal ubah foto"+e);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(fotoSiswa);
-        Log.d("Log picture", Http.picture + H.picture);
+        Log.d("Log picture", Http.picture + MainActivity.picture);
         fotoSiswa.setVisibility(View.VISIBLE);
         fotoSiswa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,16 +255,16 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
                 editor.putString("predikat_ss", "");
                 editor.putString("saran", "");
 
-                H.nama = "Pengguna Baru";
-                H.picture = "aaaaa_photoprof.png";
-                H.umur = "";
-                H.tglLhr = "";
-                H.kelas = "";
-                H.sekolah = "";
-                H.namaBoom = "Beranda";
-                H.nilai_ss = "0";
-                H.predikat_ss = "";
-                H.saran = "";
+                MainActivity.nama = "Pengguna Baru";
+                MainActivity.picture = "aaaaa_photoprof.png";
+                MainActivity.umur = "";
+                MainActivity.tglLhr = "";
+                MainActivity.kelas = "";
+                MainActivity.sekolah = "";
+                MainActivity.namaBoom = "Beranda";
+                MainActivity.nilai_ss = "0";
+                MainActivity.predikat_ss = "";
+                MainActivity.saran = "";
 
                 editor.apply();
                 finish();
@@ -263,8 +280,10 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Profil " + H.nama);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Profil " + MainActivity.nama);
+        }
     }
 
     @Override
@@ -282,7 +301,7 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
                         startActivityForResult(cameraPhoto.takePhotoIntent(), CAMERA_REQUEST);
                         cameraPhoto.addToGallery();
                     } catch (Exception e) {
-
+                        e.printStackTrace();
                     }
                     Log.d("permission granted  ", "permission granted");
                 } else {
@@ -304,44 +323,7 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onBackPressed() {
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-5730449577374867/5331596856");
-        mInterstitialAd.setAdListener(new AdListener() {
-
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                if(mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                }
-            }
-
-            @Override
-            public void onAdOpened() {
-                super.onAdOpened();
-            }
-
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                super.onAdLeftApplication();
-            }
-
-            @Override
-            public void onAdFailedToLoad(int i) {
-                super.onAdFailedToLoad(i);
-            }
-        });
-
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mInterstitialAd.loadAd(adRequest);
         finish();
-        H.namaBoom = "Beranda";
-        startActivity(new Intent(ProfilActivity.this, MainActivity.class));
     }
 
     private void hideRevealView() {
@@ -357,22 +339,118 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
         if (resultCode == RESULT_OK) {
             if (requestCode == CAMERA_REQUEST) {
                 callCamera();
-
             } else {
                 getGalery(data);
             }
         }
     }
 
-    public String getStringImage(Bitmap bmp) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 30, baos);
-        byte[] imageBytes = baos.toByteArray();
-        String encodedImage = Base64.encodeToString(imageBytes, 0);
+    public void getCameraPhotoOrientation(Context context, Uri imageUri, String imagePath) {
+        try {
+            context.getContentResolver().notifyChange(imageUri, null);
 
-        return encodedImage;
+            ExifInterface exif = new ExifInterface(imagePath);
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotate = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotate = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotate = 90;
+                    break;
+                case ExifInterface.ORIENTATION_NORMAL:
+                    rotate = 0;
+                    break;
+                case ExifInterface.ORIENTATION_UNDEFINED:
+                    rotate = 0;
+                    break;
+            }
+
+            Log.i("RotateImage", "Exif orientation: " + orientation);
+            Log.i("RotateImage", "Rotate value: " + rotate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    public String dateToString(Date date) {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
+        return df.format(date);
+    }
+
+    private void decodeFile(String path) {
+        Bitmap scaledBitmap;
+        try {
+            Bitmap unscaledBitmap = ScalingUtilities.decodeFile(path, 500, 500, ScalingUtilities.ScalingLogic.FIT);
+            scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, 500, 500, ScalingUtilities.ScalingLogic.FIT);
+
+            Matrix matrix = new Matrix();
+            if (rotate == 90) {
+                matrix.setRotate(90);
+            } else if (rotate == 270) {
+                matrix.setRotate(270);
+            } else if (rotate == 180) {
+                matrix.setRotate(180);
+            }
+            Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+            // Store to tmp file
+
+            String storage = Environment.getExternalStorageDirectory().toString();
+            File mFolder = new File(storage + "/PensilSD");
+            if (!mFolder.exists()) {
+                if (mFolder.mkdir()) {
+                    System.out.println("mFolder created");
+                } else {
+                    System.out.println("mFolder failed to create");
+                }
+            } else {
+                if (mFolder.delete()) {
+                    if (mFolder.mkdir()) {
+                        System.out.println("mFolder created");
+                    } else {
+                        System.out.println("mFolder failed to create");
+                    }
+                } else {
+                    System.out.println("mFolder failed to delete");
+                }
+            }
+
+            String s = dateToString(new Date())+".png";
+
+            File f = new File(mFolder.getAbsolutePath(), s);
+
+            strMyImagePath = f.getAbsolutePath();
+            FileOutputStream fos;
+            try {
+                fos = new FileOutputStream(f);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, fos);
+                fos.flush();
+                fos.close();
+            } catch (FileNotFoundException e) {
+
+                e.printStackTrace();
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+
+            rotatedBitmap.recycle();
+        } catch (Throwable e) {
+            Log.e("LoadImage Error", String.valueOf(e));
+        }
+
+        if (strMyImagePath == null) {
+            strMyImagePath = path;
+        }
+    }
+
+    @SuppressWarnings({"ConstantConditions", "ResultOfMethodCallIgnored"})
     public void getGalery(Intent data) {
         try {
             myDialog = new Dialog(ProfilActivity.this);
@@ -380,8 +458,8 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
             myDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT);
             myDialog.setCancelable(true);
-            Button save = (Button) myDialog.findViewById(R.id.button_update_profilepicture);
-            image_update = (ImageView) myDialog.findViewById(R.id.img_profile_update);
+            Button save = myDialog.findViewById(R.id.button_update_profilepicture);
+            image_update = myDialog.findViewById(R.id.img_profile_update);
             myDialog.show();
 
             if (data.getData() == null) {
@@ -390,55 +468,15 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
                 uri = data.getData();
             }
             galleryPhoto.setPhotoUri(uri);
-            String photoPath = galleryPhoto.getPath();
+            final String photoPath = galleryPhoto.getPath();
             bitmap = ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
 
             image_update.setImageBitmap(bitmap);
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final ProgressDialog loading = ProgressDialog.show(ProfilActivity.this, "Ubah Foto...", "Tunggu yah :) ...", false, false);
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, Http.url + "penso/update_picture.php",
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String result) {
-                                    loading.dismiss();
-                                    Log.d("Log result", result);
-
-                                    if (!result.toLowerCase().equals("failed")) {
-                                        saveFoto(result);
-                                        HomeActivity.fotoSiswa.setImageBitmap(bitmap);
-                                        Toast.makeText(ProfilActivity.this, "Berhasil Ubah Gambar", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(ProfilActivity.this, "Gagal Ubah Gambar", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            },
-
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
-                                    loading.dismiss();
-                                }
-                            }) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            String image = getStringImage(bitmap);
-                            Intent a = getIntent();
-                            Map<String, String> params = new HashMap<String, String>();
-
-                            params.put("user_id", H.user_id);
-                            params.put("picture", image);
-                            return params;
-                        }
-                    };
-
-                    stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-                    stringRequest.setShouldCache(false);
-                    RequestQueue requestQueue = Volley.newRequestQueue(ProfilActivity.this);
-                    requestQueue.add(stringRequest);
-                    myDialog.cancel();
+                    saveFoto(photoPath);
+                    myDialog.dismiss();
                     fotoSiswa.setImageBitmap(bitmap);
                 }
             });
@@ -448,64 +486,29 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void callCamera() {
+        final String photoTake = cameraPhoto.getPhotoPath();
+        File avatarFileA = new File(photoTake);
+        Uri avatarUri = Uri.fromFile(avatarFileA);
+        getCameraPhotoOrientation(this,avatarUri,photoTake);
+        decodeFile(photoTake);
         try {
             myDialog = new Dialog(ProfilActivity.this);
             myDialog.setContentView(R.layout.update_foto);
             myDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.WRAP_CONTENT);
             myDialog.setCancelable(true);
-            Button save = (Button) myDialog.findViewById(R.id.button_update_profilepicture);
-            image_update = (ImageView) myDialog.findViewById(R.id.img_profile_update);
+            Button save = myDialog.findViewById(R.id.button_update_profilepicture);
+            image_update = myDialog.findViewById(R.id.img_profile_update);
             myDialog.show();
 
-            String photoTake = cameraPhoto.getPhotoPath();
-            bitmap = ImageLoader.init().from(photoTake).requestSize(512, 512).getBitmap();
+            bitmap = ImageLoader.init().from(strMyImagePath).requestSize(512, 512).getBitmap();
             image_update.setImageBitmap(bitmap);
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final ProgressDialog loading = ProgressDialog.show(ProfilActivity.this, "Ubah Foto...", "Tunggu yah :) ...", false, false);
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, Http.url + "penso/update_picture.php",
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String result) {
-                                    loading.dismiss();
-                                    Log.d("Log result", result);
-
-                                    if (!result.toLowerCase().equals("failed")) {
-                                        saveFoto(result);
-                                        HomeActivity.fotoSiswa.setImageBitmap(bitmap);
-                                        Toast.makeText(ProfilActivity.this, "Berhasil Ubah Gambar", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(ProfilActivity.this, "Gagal Ubah Gambar", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            },
-
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
-                                    loading.dismiss();
-                                }
-                            }) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            String image = getStringImage(bitmap);
-                            Intent a = getIntent();
-                            Map<String, String> params = new HashMap<String, String>();
-
-                            params.put("user_id", H.user_id);
-                            params.put("picture", image);
-                            return params;
-                        }
-                    };
-
-                    stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-                    stringRequest.setShouldCache(false);
-                    RequestQueue requestQueue = Volley.newRequestQueue(ProfilActivity.this);
-                    requestQueue.add(stringRequest);
+                    saveFoto(strMyImagePath);
                     myDialog.cancel();
                     fotoSiswa.setImageBitmap(bitmap);
                 }
@@ -516,10 +519,14 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @SuppressLint("InflateParams")
     private void popupImage() {
         LayoutInflater inflater = (LayoutInflater) mContexts.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        View customView = inflater.inflate(R.layout.popup_foto, null);
+        View customView = null;
+        if (inflater != null) {
+            customView = inflater.inflate(R.layout.popup_foto, null);
+        }
         mPopupImage = new PopupWindow(
                 customView,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -529,21 +536,29 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
         if (Build.VERSION.SDK_INT >= 21) {
             mPopupImage.setElevation(5.0f);
         }
-        RelativeLayout relativeLayout = (RelativeLayout) customView.findViewById(R.id.rl_custom_layout);
-        ImageButton closeButton = (ImageButton) customView.findViewById(R.id.ib_close);
-        ImageView fotoFull = (ImageView) customView.findViewById(R.id.foto_siswa);
+
+        ImageButton closeButton = null;
+        if (customView != null) {
+            closeButton = customView.findViewById(R.id.ib_close);
+        }
+        ImageView fotoFull = null;
+        if (customView != null) {
+            fotoFull = customView.findViewById(R.id.foto_siswa);
+        }
         Picasso.with(ProfilActivity.this)
-                .load(Http.picture + H.picture)//
+                .load(Http.picture + MainActivity.picture)//
                 .placeholder(R.drawable.ic_photoprof)
                 .error(R.drawable.ic_photoprof)
                 .into(fotoFull);
 
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPopupImage.dismiss();
-            }
-        });
+        if (closeButton != null) {
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mPopupImage.dismiss();
+                }
+            });
+        }
 
         mPopupImage.showAtLocation(llayout, Gravity.CENTER, 0, 0);
     }
@@ -553,7 +568,7 @@ public class ProfilActivity extends AppCompatActivity implements View.OnClickLis
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString("picture", foto);
-        H.picture = foto;
+        MainActivity.picture = foto;
         editor.apply();
     }
 

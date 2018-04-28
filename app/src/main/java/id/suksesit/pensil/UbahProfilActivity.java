@@ -43,23 +43,23 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ubah_profil);input6 = (TextView) findViewById(R.id.input6);
-        input7 = (TextView) findViewById(R.id.input7);
-        btnSmpProfil = (Button) findViewById(R.id.btn_save);
-        btnGantiSekolah = (Button) findViewById(R.id.btn_change_sekolah);
-        eUmur = (EditText) findViewById(R.id.tUmurs);
-        eNama = (EditText) findViewById(R.id.tNama);
-        eKelas = (EditText) findViewById(R.id.tKelas);
-        eTtl = (EditText) findViewById(R.id.tTglLhr);
-        eSekolah = (EditText) findViewById(R.id.tnamaSekolah);
-        switch_sekolah = (Switch) findViewById(R.id.switch_sekolah);
-        linear_switch = (LinearLayout) findViewById(R.id.linear_switch);
+        setContentView(R.layout.activity_ubah_profil);input6 = findViewById(R.id.input6);
+        input7 = findViewById(R.id.input7);
+        btnSmpProfil = findViewById(R.id.btn_save);
+        btnGantiSekolah = findViewById(R.id.btn_change_sekolah);
+        eUmur = findViewById(R.id.tUmurs);
+        eNama = findViewById(R.id.tNama);
+        eKelas = findViewById(R.id.tKelas);
+        eTtl = findViewById(R.id.tTglLhr);
+        eSekolah = findViewById(R.id.tnamaSekolah);
+        switch_sekolah = findViewById(R.id.switch_sekolah);
+        linear_switch = findViewById(R.id.linear_switch);
 
-        eUmur.setText(H.umur);
-        eNama.setText(H.nama);
-        eKelas.setText(H.kelas);
-        eTtl.setText(H.tglLhr);
-        eSekolah.setText(H.sekolah);
+        eUmur.setText(MainActivity.umur);
+        eNama.setText(MainActivity.nama);
+        eKelas.setText(MainActivity.kelas);
+        eTtl.setText(MainActivity.tglLhr);
+        eSekolah.setText(MainActivity.sekolah);
         showDialogTtl();
         final Calendar c = Calendar.getInstance();
         tahun = c.get(Calendar.YEAR);
@@ -68,7 +68,7 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
         mDay = c.get(Calendar.DAY_OF_MONTH);
         switch_sekolah.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked == true) {
+                if (isChecked) {
                     input6.setTextColor(getResources().getColor(R.color.colorPrimary));
                     linear_switch.setVisibility(View.VISIBLE);
                 } else {
@@ -89,9 +89,9 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
                     Snackbar.make(v, "Ganti nama kamu dengan benar", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
-                    Pf.nama.setText(eNama.getText().toString());
-                    Pf.tglLhr.setText("Tgl Lahir\n\n" +eTtl.getText().toString());
-                    Pf.umur.setText("Umur\n\n"+eUmur.getText().toString());
+                    ProfilActivity.nama.setText(eNama.getText().toString());
+                    ProfilActivity.tglLhr.setText("Tgl Lahir\n\n" +eTtl.getText().toString());
+                    ProfilActivity.umur.setText("Umur\n\n"+eUmur.getText().toString());
                     HomeActivity.nama.setText(eNama.getText().toString());
                     saveProfile(eNama.getText().toString(),eTtl.getText().toString(),eUmur.getText().toString());
                     Toast.makeText(getApplicationContext(),"Data diri berhasil diubah", Toast.LENGTH_LONG).show();
@@ -107,8 +107,8 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
                     Snackbar.make(v, "Isi data dengan lengkap", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 } else {
-                    Pf.kelas.setText("Kelas : " +eKelas.getText().toString());
-                    Pf.sekolah.setText("Sekolah\n" + eSekolah.getText().toString());
+                    ProfilActivity.kelas.setText("Kelas : " +eKelas.getText().toString());
+                    ProfilActivity.sekolah.setText("Sekolah\n" + eSekolah.getText().toString());
                     saveSekolah(eKelas.getText().toString(),eSekolah.getText().toString());
                     Toast.makeText(getApplicationContext(),"Data sekolah berhasil diubah", Toast.LENGTH_LONG).show();
                     finish();
@@ -117,8 +117,10 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
                 }
             }
         });
-        getSupportActionBar().setTitle("Ubah Profil");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Ubah Profil");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
     @Override
     public boolean onSupportNavigateUp(){
@@ -134,9 +136,9 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
         editor.putString("tgl_lahir", ttl);
         editor.putString("umur", umur);
 
-        H.nama = nama;
-        H.umur = umur;
-        H.tglLhr = ttl;
+        MainActivity.nama = nama;
+        MainActivity.umur = umur;
+        MainActivity.tglLhr = ttl;
 
         editor.apply();
     }
@@ -148,8 +150,8 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
         editor.putString("kelas", kelas);
         editor.putString("sekolah", sekolah);
 
-        H.kelas = kelas;
-        H.sekolah = sekolah;
+        MainActivity.kelas = kelas;
+        MainActivity.sekolah = sekolah;
 
         editor.apply();
     }
@@ -182,7 +184,7 @@ public class UbahProfilActivity extends AppCompatActivity implements DatePickerD
             };
 
     public void showDialogTtl() {
-        eTtl = (EditText) findViewById(R.id.tTglLhr);
+        eTtl = findViewById(R.id.tTglLhr);
         eTtl.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {

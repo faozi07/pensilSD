@@ -2,6 +2,7 @@ package id.suksesit.pensil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,16 +20,36 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     ImageView loading, logo;
     TextView t1, t2;
+    SharedPreferences spUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        loading = (ImageView) findViewById(R.id.loading);
-        logo = (ImageView) findViewById(R.id.logo);
-        t1 = (TextView) findViewById(R.id.pensil2);
-        t2 = (TextView) findViewById(R.id.pensil3);
+        loading = findViewById(R.id.loading);
+        logo = findViewById(R.id.logo);
+        t1 = findViewById(R.id.pensil2);
+        t2 = findViewById(R.id.pensil3);
+        spUser = getSharedPreferences("userInfo",Context.MODE_PRIVATE);
+        if (!spUser.getString("nama","").equals("")) {
+            MainActivity.nama = spUser.getString("nama","");
+        }
+        if (!spUser.getString("tgl_lahir","").equals("")) {
+            MainActivity.tglLhr = spUser.getString("tgl_lahir","");
+        }
+        if (!spUser.getString("umur","").equals("")) {
+            MainActivity.umur = spUser.getString("umur","");
+        }
+        if (!spUser.getString("kelas","").equals("")) {
+            MainActivity.kelas = spUser.getString("kelas","");
+        }
+        if (!spUser.getString("sekolah","").equals("")) {
+            MainActivity.sekolah = spUser.getString("sekolah","");
+        }
+        if (!spUser.getString("picture","").equals("")) {
+            MainActivity.picture = spUser.getString("picture","");
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -51,7 +72,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void konek() {
         ConnectivityManager cm = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        NetworkInfo netInfo = null;
+        if (cm != null) {
+            netInfo = cm.getActiveNetworkInfo();
+        }
         if (netInfo != null && netInfo.isConnected()) {
             loading.setVisibility(View.GONE);
             logo.setVisibility(View.VISIBLE);

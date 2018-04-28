@@ -60,10 +60,6 @@
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ProfileActivity"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".HomeActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".SoalActivity" />
