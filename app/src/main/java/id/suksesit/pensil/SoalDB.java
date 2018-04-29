@@ -72,7 +72,7 @@ public class SoalDB extends SQLiteOpenHelper {
     public void updateSoal(int id) {
         try {
             SQLiteDatabase db = getWritableDatabase();
-            String sql = "UPDATE " + TABLE_NAMA_SOAL + " SET " + STATUS + " = '0' WHERE " + ID + "="+id+";";
+            String sql = "UPDATE " + TABLE_NAMA_SOAL + " SET " + STATUS + " = 0 WHERE " + ID + "="+id+";";
             db.execSQL(sql);
         } catch (Exception exp) {
             exp.printStackTrace();

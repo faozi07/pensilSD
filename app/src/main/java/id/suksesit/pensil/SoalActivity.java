@@ -24,19 +24,21 @@ import id.suksesit.pensil.helper.ResetStatus;
 public class SoalActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener {
 
     private Button btnLanjut;
-    private TextView nosoal, pertanyaan, status, id_angket,nil,jnsSoal;
-    private RadioButton sering, selalu, kadang, tdkpernah;
+    private TextView nosoal;
+    private TextView pertanyaan;
+    private TextView nil;
+    private TextView jnsSoal;
     private RadioGroup rbGrup;
     String rendah = "RENDAH", sedang = "SEDANG", tinggi = "TINGGI", n = "";
     String ketRen = "Sikap sosial akan kepedulian terhadap diri sendiri, teman sejawat, dan lingkungan perlu diperbaiki segera " +
             "dan menyeluruh, supaya anak bisa terselamatkan dari perilaku dan kepribadian yang buruk",
-            ketSed= "Sikap sosial akan kepedulian terhadap diri sendiri, teman sejawat, dan lingkungan perlu ditingkatkan supaya " +
+            ketSed = "Sikap sosial akan kepedulian terhadap diri sendiri, teman sejawat, dan lingkungan perlu ditingkatkan supaya " +
                     "sikap sosial dapat lebih maksimal. Apa yang sudah baik dipertahankan dan yang dirasa belum baik perlu ditingkatkan",
-            ketTing="Sikap sosial akan kepedulian terhadap diri sendiri, teman sejawat, dan lingkungan perlu dipertahankan sehingga bisa " +
+            ketTing = "Sikap sosial akan kepedulian terhadap diri sendiri, teman sejawat, dan lingkungan perlu dipertahankan sehingga bisa " +
                     "dijadikan teladan bagi orang lain";
     private RelativeLayout llayout;
     private int jmlprtnyaan = 1;
-    public static int nilai = 0,niltambah = 0, idSoal = 0;
+    public static int nilai = 0, niltambah = 0, idSoal = 0;
     public static String id_angket1 = "";
     SoalDB soalDB;
     public static ArrayList<modelSoal> arraySoal = new ArrayList<>();
@@ -49,14 +51,8 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
         llayout = findViewById(R.id.llayout);
         nosoal = findViewById(R.id.JmlPrtnyaan);
         nil = findViewById(R.id.tnilai);
-        status = findViewById(R.id.stts);
-        id_angket = findViewById(R.id.id_angket);
         pertanyaan = findViewById(R.id.pertanyaan);
         jnsSoal = findViewById(R.id.jenis_soal);
-        sering = findViewById(R.id.rSering);
-        selalu = findViewById(R.id.rSelalu);
-        kadang = findViewById(R.id.rKadang);
-        tdkpernah = findViewById(R.id.rTdkPernah);
         rbGrup = findViewById(R.id.rbGrup);
         btnLanjut = findViewById(R.id.btnNext);
         rbGrup.setOnCheckedChangeListener(this);
@@ -67,12 +63,12 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
                 rbGrup.clearCheck();
                 if (n.equals("")) {
                     Toast.makeText(SoalActivity.this, "Pilih Jawaban Kamu ya :)", Toast.LENGTH_SHORT).show();
-                } else  {
-                ubahStatus(idSoal);
+                } else {
+                    ubahStatus(idSoal);
                     nilai = nilai + niltambah;
                     jmlprtnyaan = jmlprtnyaan + 1;
                     nosoal.setText(String.valueOf(jmlprtnyaan));
-                    if(jmlprtnyaan == 15 || nosoal.getText() == "15") {
+                    if (jmlprtnyaan == 15 || nosoal.getText() == "15") {
                         btnLanjut.setText("selesai");
                         btnLanjut.setBackgroundColor(Color.rgb(102, 51, 153));
                     } else if (jmlprtnyaan == 16 || nosoal.getText() == "16") {
@@ -87,7 +83,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
                     MainActivity.nilai_ss = String.valueOf(nilai);
                     nil.setText(String.valueOf(nilai));
                     ubahNilai();
-                    n="";
+                    n = "";
                 }
             }
         });
@@ -97,6 +93,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         showDialog2();
@@ -162,22 +159,22 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     private void ubahNilai() {
 
-        String nil2="",kes="",sar="";
+        String nil2 = "", kes = "", sar = "";
         if (nilai >= 30 && nilai <= 60) {
             nil2 = nil.getText().toString();
-            kes=rendah;
-            sar=ketRen;
-            saveNilai(nil.getText().toString(),rendah,ketRen);
+            kes = rendah;
+            sar = ketRen;
+            saveNilai(nil.getText().toString(), rendah, ketRen);
         } else if (nilai >= 61 && nilai <= 90) {
             nil2 = nil.getText().toString();
-            kes=sedang;
-            sar=ketSed;
-            saveNilai(nil.getText().toString(),sedang,ketSed);
+            kes = sedang;
+            sar = ketSed;
+            saveNilai(nil.getText().toString(), sedang, ketSed);
         } else if (nilai >= 91) {
             nil2 = nil.getText().toString();
-            kes=tinggi;
-            sar=ketTing;
-            saveNilai(nil.getText().toString(),tinggi,ketTing);
+            kes = tinggi;
+            sar = ketTing;
+            saveNilai(nil.getText().toString(), tinggi, ketTing);
         }
 
     }
@@ -199,7 +196,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
 
     public void tampil() {
         soalDB.showAllSoal();
-        for (int i=0;i<arraySoal.size();i++) {
+        for (int i = 0; i < arraySoal.size(); i++) {
             modelSoal ms = arraySoal.get(i);
             pertanyaan.setText(ms.getPertanyaan());
             jnsSoal.setText(ms.getKategori());
@@ -207,7 +204,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
         }
     }
 
-    private void showDialog2(){
+    private void showDialog2() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 this);
         alertDialogBuilder.setTitle("Batal isi soal psikologi ?");
@@ -215,15 +212,15 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
                 .setMessage("Apa kamu serius untuk batal isi soal ?")
                 .setIcon(R.drawable.ic_shock)
                 .setCancelable(false)
-                .setPositiveButton("Ya",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
+                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         finish();
                         MainActivity.namaBoom = "Beranda";
                         resetStatus();
-                        startActivity(new Intent(SoalActivity.this,MainActivity.class));
+                        startActivity(new Intent(SoalActivity.this, MainActivity.class));
                     }
                 })
-                .setNegativeButton("Tidak",new DialogInterface.OnClickListener() {
+                .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
@@ -232,6 +229,7 @@ public class SoalActivity extends AppCompatActivity implements RadioGroup.OnChec
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
+
     @Override
     public void onBackPressed() {
         showDialog2();

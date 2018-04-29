@@ -23,7 +23,7 @@ public class TentangKamiActivity extends AppCompatActivity {
         String ttg = "Aplikasi Pendeteksi Psikologis Anak ini bertujuan untuk membantu orang tua dan guru untuk senantiasa mengatasi sejak dini kondisi psikologi anak yang biasa berubah-ubah dan mengarah ke hal yang negatif.\n" +
                 "<br><br>Dengan aplikasi ini diharapkan mampu mencegah terjadinya psikolgi anak yang salah karena akibat pengaruh lingkungan dan orang-orang terdekatnya sehingga dapat menyelamatkan anak dari perbuatan-perbuatan " +
                 "yang dilarang oleh negara, agama, maupun secara adat dan budaya yang baik setempat.<br><br><br>" +
-                "Indikator Sikap Sosial : <br>30 ≥ Nilai ≥ 60    =  Rendah <br>61 ≥ Nilai ≥ 90    =  Sedang<br>91 ≥ Nilai ≥ 120    =  Tinggi";
+                "Indikator Sikap Sosial : <br>30 ≥ Nilai < 61    =  Rendah <br>61 ≥ Nilai < 91    =  Sedang<br>Nilai ≥ 91    =  Tinggi";
         webView.loadData("<p style=\"text-align:justify; color:#000\">"+ttg+"</p>","text/html","UTF-8");
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Tentang Kami");
